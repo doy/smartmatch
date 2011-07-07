@@ -17,7 +17,7 @@ smartmatch_cb(pTHX_ OP *o, void *user_data)
     o->op_flags &= ~OPf_KIDS;
     op_free(o);
 
-    cb_op = newSVOP(OP_CONST, 0, (SV*)user_data);
+    cb_op = newSVOP(OP_CONST, 0, newSVsv(user_data));
     list = newLISTOP(OP_LIST, 0, left, right);
     new = newUNOP(OP_ENTERSUB, OPf_STACKED,
                   op_append_elem(OP_LIST, list, cb_op));
@@ -56,5 +56,10 @@ register (cb)
 void
 unregister (id)
     UV id;
+    PREINIT:
+    SV *cb;
     CODE:
-        hook_op_check_smartmatch_remove(id);
+        cb = hook_op_check_smartmatch_remove(id);
+        if (cb) {
+            SvREFCNT_dec(cb);
+        }
