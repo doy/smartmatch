@@ -86,10 +86,10 @@ while (<DATA>) {
     test_again:
     my $res;
     if ($note =~ /NOWARNINGS/) {
-	$res = eval "use smartmatch 'core'; no warnings; $tstr";
+	$res = eval "no warnings; $tstr";
     }
     else {
-	$res = eval "use smartmatch 'core'; $tstr";
+	$res = eval $tstr;
     }
 
     chomp $@;

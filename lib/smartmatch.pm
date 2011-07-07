@@ -5,7 +5,6 @@ use warnings;
 
 use parent 'DynaLoader';
 use B::Hooks::OP::Check;
-use B::Hooks::EndOfScope;
 
 sub dl_load_flags { 0x01 }
 
@@ -29,16 +28,11 @@ sub import {
         $cb = $engine->can('match') unless ref($cb);
     }
 
-    $^H ||= 0x020000; # HINT_LOCALIZE_HH
-
-    $package->unimport;
-    $^H{'smartmatch_cb'} = smartmatch::register($cb);
-    on_scope_end { $package->unimport };
+    smartmatch::register($cb);
 }
 
 sub unimport {
-    return unless exists $^H{'smartmatch_cb'};
-    smartmatch::unregister(delete $^H{'smartmatch_cb'});
+    smartmatch::unregister();
 }
 
 1;

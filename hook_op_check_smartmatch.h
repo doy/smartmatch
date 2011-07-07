@@ -4,7 +4,6 @@
 #include "perl.h"
 #include "hook_op_check.h"
 
-UV hook_op_check_smartmatch(void *user_data);
-void *hook_op_check_smartmatch_remove(UV id);
+UV hook_op_check_smartmatch();
 
 #endif
