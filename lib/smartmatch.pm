@@ -21,7 +21,13 @@ __PACKAGE__->bootstrap(
 sub import {
     my $package = shift;
     my ($cb) = @_;
-    $cb = $cb->can('match') unless ref($cb);
+
+    if (!ref($cb)) {
+        my $engine = "smartmatch::engine::$cb";
+        eval "require $engine; 1"
+            or die "Couldn't load smartmatch engine $engine: $@";
+        $cb = $engine->can('match') unless ref($cb);
+    }
 
     $^H ||= 0x020000; # HINT_LOCALIZE_HH
 

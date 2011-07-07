@@ -10,4 +10,9 @@ ok(1 ~~ 1);
 }
 ok(1 ~~ 1);
 
+{
+    use smartmatch 'core';
+    ok(1 ~~ 1);
+}
+
 done_testing;
