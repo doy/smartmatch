@@ -75,7 +75,7 @@ sub match {
             return match([sort keys %$a], [sort keys %$b]);
         }
         elsif (type($a) eq 'Array') {
-            return grep { defined && exists $b->{$_} } @$a;
+            return grep { exists $b->{$_ // ''} } @$a;
         }
         elsif (type($a) eq 'Regex') {
             return grep /$a/, keys %$b;
@@ -89,7 +89,7 @@ sub match {
     }
     elsif (type($b) eq 'Array') {
         if (type($a) eq 'Hash') {
-            return grep { defined && exists $a->{$_} } @$b;
+            return grep { exists $a->{$_ // ''} } @$b;
         }
         elsif (type($a) eq 'Array') {
             return unless @$a == @$b;
