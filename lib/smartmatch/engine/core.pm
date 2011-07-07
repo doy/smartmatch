@@ -158,6 +158,8 @@ sub match {
         return $a->$overload($b, 0) if $overload;
     }
 
+    # XXX perlsyn currently has this undef case after the Num cases, but that's
+    # not how it's currently implemented
     if (type($a) eq 'undef') {
         return !defined($b);
     }
