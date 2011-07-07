@@ -55,6 +55,16 @@ sub match {
     }
     elsif (type($b) eq 'Object') {
         my $overload = overload::Method($b, '~~');
+
+        # XXX this is buggy behavior and may be changed
+        # see http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2011-07/msg00214.html
+        if (!$overload && overload::Overloaded($b)) {
+            $overload = overload::Method($a, '~~');
+            die "no ~~ overloading on $b"
+                unless $overload;
+            return $a->$overload($b, 0);
+        }
+
         die "no ~~ overloading on $b"
             unless $overload;
         return $b->$overload($a, 1);
