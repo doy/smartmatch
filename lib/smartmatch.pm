@@ -1,6 +1,7 @@
 package smartmatch;
 use strict;
 use warnings;
+use 5.010;
 # ABSTRACT: pluggable smart matching backends
 
 use parent 'DynaLoader';

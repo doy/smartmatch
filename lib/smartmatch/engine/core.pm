@@ -1,6 +1,7 @@
 package smartmatch::engine::core;
 use strict;
 use warnings;
+use 5.010;
 
 use B;
 use Hash::Util::FieldHash qw(idhash);
