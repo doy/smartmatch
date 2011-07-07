@@ -35,7 +35,7 @@ sub type {
     else {
         my $b = B::svref_2object(\$thing);
         my $flags = $b->FLAGS;
-        if (($flags & B::SVf_NOK) && !($flags & B::SVf_POK)) {
+        if ($flags & (B::SVf_IOK | B::SVf_NOK)) {
             return 'Num';
         }
         elsif (looks_like_number($thing)) {
