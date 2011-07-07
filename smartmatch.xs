@@ -17,7 +17,7 @@ smartmatch_cb(pTHX_ OP *o, void *user_data)
     o->op_flags &= ~OPf_KIDS;
     op_free(o);
 
-    cb_op = newSVOP(OP_CONST, 0, newSVsv(user_data));
+    cb_op = newCVREF(0, newSVOP(OP_CONST, 0, newSVsv(user_data)));
     list = newLISTOP(OP_LIST, 0, left, right);
     new = newUNOP(OP_ENTERSUB, OPf_STACKED,
                   op_append_elem(OP_LIST, list, cb_op));
