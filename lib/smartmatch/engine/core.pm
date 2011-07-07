@@ -72,7 +72,13 @@ sub match {
     }
     elsif (type($b) eq 'Hash') {
         if (type($a) eq 'Hash') {
-            return match([sort keys %$a], [sort keys %$b]);
+            my @a = sort keys %$a;
+            my @b = sort keys %$b;
+            return unless @a == @b;
+            for my $i (0..$#a) {
+                return unless $a[$i] eq $b[$i];
+            }
+            return 1;
         }
         elsif (type($a) eq 'Array') {
             return grep { exists $b->{$_ // ''} } @$a;
