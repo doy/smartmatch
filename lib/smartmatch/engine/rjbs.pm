@@ -11,13 +11,13 @@ sub match {
     if (!defined($b)) {
         return !defined($a);
     }
-    elsif (blessed($b) && my $overload = overload::Method($b, '~~')) {
+    elsif (blessed($b) && (my $overload = overload::Method($b, '~~'))) {
         return $b->$overload($a, 1);
     }
     elsif (reftype($b) eq 'REGEXP') {
         return $a =~ $b;
     }
-    elsif (blessed($b) && my $overload = overload::Method($b, '=~')) {
+    elsif (blessed($b) && overload::Method($b, '=~')) {
         return $a =~ $b;
     }
     elsif (!blessed($b) && reftype($b) eq 'CODE') {
