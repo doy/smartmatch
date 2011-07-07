@@ -12,7 +12,7 @@ sub type {
     if (!defined($thing)) {
         return 'undef';
     }
-    elsif (blessed($thing)) {
+    elsif (blessed($thing) && reftype($thing) ne 'REGEXP') {
         return 'Object';
     }
     elsif (my $reftype = reftype($thing)) {
@@ -57,7 +57,7 @@ sub match {
         my $overload = overload::Method($b, '~~');
         die "no ~~ overloading on $b"
             unless $overload;
-        return $overload->($a, 1);
+        return $b->$overload($a, 1);
     }
     elsif (type($b) eq 'CodeRef') {
         if (type($a) eq 'Hash') {
@@ -72,10 +72,10 @@ sub match {
     }
     elsif (type($b) eq 'Hash') {
         if (type($a) eq 'Hash') {
-            return match([keys %$a], [keys %$b]);
+            return match([sort keys %$a], [sort keys %$b]);
         }
         elsif (type($a) eq 'Array') {
-            return grep { exists $b->{$_} } @$a;
+            return grep { defined && exists $b->{$_} } @$a;
         }
         elsif (type($a) eq 'Regex') {
             return grep /$a/, keys %$b;
@@ -89,7 +89,7 @@ sub match {
     }
     elsif (type($b) eq 'Array') {
         if (type($a) eq 'Hash') {
-            return grep { exists $a->{$_} } @$b;
+            return grep { defined && exists $a->{$_} } @$b;
         }
         elsif (type($a) eq 'Array') {
             return unless @$a == @$b;
@@ -121,11 +121,10 @@ sub match {
     }
     elsif (type($a) eq 'Object') {
         my $overload = overload::Method($a, '~~');
-        die "no ~~ overloading on $a"
-            unless $overload;
-        return $overload->($b, 0);
+        return $a->$overload($b, 0) if $overload;
     }
-    elsif (type($b) eq 'Num') {
+
+    if (type($b) eq 'Num') {
         return $a == $b;
     }
     elsif (type($a) eq 'Num' && type($b) eq 'numish') {
