@@ -124,14 +124,15 @@ sub match {
         return $a->$overload($b, 0) if $overload;
     }
 
-    if (type($b) eq 'Num') {
+    if (type($a) eq 'undef') {
+        return !defined($b);
+    }
+    elsif (type($b) eq 'Num') {
+        no warnings 'uninitialized', 'numeric'; # ugh
         return $a == $b;
     }
     elsif (type($a) eq 'Num' && type($b) eq 'numish') {
         return $a == $b;
-    }
-    elsif (type($a) eq 'undef') {
-        return !defined($b);
     }
     else {
         return $a eq $b;
