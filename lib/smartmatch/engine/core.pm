@@ -3,6 +3,7 @@ use strict;
 use warnings;
 
 use B;
+use Hash::Util::FieldHash qw(idhash);
 use Scalar::Util qw(blessed looks_like_number reftype);
 use overload ();
 
@@ -48,7 +49,7 @@ sub type {
 }
 
 sub match {
-    my ($a, $b) = @_;
+    my ($a, $b, $seen) = @_;
 
     if (type($b) eq 'undef') {
         return !defined($a);
@@ -109,8 +110,15 @@ sub match {
         }
         elsif (type($a) eq 'Array') {
             return unless @$a == @$b;
+            if (!$seen) {
+                $seen = {};
+                idhash %$seen;
+            }
             for my $i (0..$#$a) {
-                return unless match($a->[$i], $b->[$i]);
+                if (defined($b->[$i]) && $seen->{$b->[$i]}++) {
+                    return $a->[$i] == $b->[$i];
+                }
+                return unless match($a->[$i], $b->[$i], $seen);
             }
             return 1;
         }
@@ -121,7 +129,16 @@ sub match {
             return grep !defined, @$b;
         }
         else {
-            return grep { match($a, $_) } @$b;
+            if (!$seen) {
+                $seen = {};
+                idhash %$seen;
+            }
+            return grep {
+                if (defined($_) && $seen->{$_}++) {
+                    return $a == $_;
+                }
+                match($a, $_, $seen)
+            } @$b;
         }
     }
     elsif (type($b) eq 'Regex') {
