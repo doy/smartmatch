@@ -21,7 +21,7 @@ sub type {
         if (overload::Method($thing, '~~')) {
             return 'Overloaded';
         }
-        elsif (overload::Method($thing, '=~')) {
+        elsif (overload::Method($thing, 'qr')) {
             return 'Regex';
         }
         else {
