@@ -4,6 +4,7 @@ use warnings;
 use 5.010;
 
 use B;
+use Carp qw(croak);
 use Hash::Util::FieldHash qw(idhash);
 use Scalar::Util qw(blessed looks_like_number reftype);
 use overload ();
@@ -62,12 +63,11 @@ sub match {
         # see http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2011-07/msg00214.html
         if (!$overload && overload::Overloaded($b)) {
             $overload = overload::Method($a, '~~');
-            die "no ~~ overloading on $b"
-                unless $overload;
-            return $a->$overload($b, 0);
+            return $a->$overload($b, 0)
+                if $overload;
         }
 
-        die "no ~~ overloading on $b"
+        croak("Smart matching a non-overloaded object breaks encapsulation")
             unless $overload;
         return $b->$overload($a, 1);
     }
