@@ -62,11 +62,11 @@ sub import {
         $cb = $engine->can('match') unless ref($cb);
     }
 
-    smartmatch::register($cb);
+    register($cb);
 }
 
 sub unimport {
-    smartmatch::unregister();
+    unregister();
 }
 
 =head1 BUGS
