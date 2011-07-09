@@ -11,14 +11,15 @@ ok(1 ~~ 1);
 }
 ok(1 ~~ 1);
 
-{
+BEGIN {
     package smartmatch::engine::foo;
     sub match { ref($_[1]) eq 'ARRAY' }
+    $INC{'smartmatch/engine/foo.pm'} = 1;
 }
 
 {
     use smartmatch 'foo';
-    ok([] ~~ qr/ARRAY/);
+    ok(1 ~~ []);
     ok(!(1 ~~ sub { 0 }));
 }
 
