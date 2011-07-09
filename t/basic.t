@@ -12,7 +12,12 @@ ok(1 ~~ 1);
 ok(1 ~~ 1);
 
 {
-    use smartmatch 'rjbs';
+    package smartmatch::engine::foo;
+    sub match { ref($_[1]) eq 'ARRAY' }
+}
+
+{
+    use smartmatch 'foo';
     ok([] ~~ qr/ARRAY/);
     ok(!(1 ~~ sub { 0 }));
 }
