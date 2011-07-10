@@ -51,6 +51,46 @@ smartmatch_cb(pTHX_ OP *o, void *user_data)
     o->op_flags &= ~OPf_KIDS;
     op_free(o);
 
+/* array slices used to parse incorrectly (perl RT#77468),
+ * fix (hack) this up */
+#if PERL_VERSION < 14
+    if (left->op_type == OP_ASLICE) {
+        OP *sib;
+        sib = left->op_sibling;
+        left->op_flags &= ~OPf_WANT_SCALAR;
+        left->op_flags |= OPf_WANT_LIST
+                        | OPf_PARENS
+                        | OPf_REF
+                        | OPf_MOD
+                        | OPf_STACKED
+                        | OPf_SPECIAL;
+        left->op_sibling = NULL;
+        left = newLISTOP(OP_ANONLIST,
+                         OPf_WANT_SCALAR|OPf_SPECIAL,
+                         newOP(OP_PUSHMARK, 0),
+                         left);
+        left->op_sibling = sib;
+    }
+    if (right->op_type == OP_ASLICE) {
+        OP *sib;
+        sib = right->op_sibling;
+        right->op_flags &= ~OPf_WANT_SCALAR;
+        right->op_flags |= OPf_WANT_LIST
+                         | OPf_PARENS
+                         | OPf_REF
+                         | OPf_MOD
+                         | OPf_STACKED
+                         | OPf_SPECIAL;
+        right->op_sibling = NULL;
+        right = newLISTOP(OP_ANONLIST,
+                          OPf_WANT_SCALAR|OPf_SPECIAL,
+                          newOP(OP_PUSHMARK, 0),
+                          right);
+        right->op_sibling = sib;
+        left->op_sibling = right;
+    }
+#endif
+
     cb_op = newCVREF(0, newSVOP(OP_CONST, 0, newSVsv(*cb)));
     list = newLISTOP(OP_LIST, 0, left, right);
     new = newUNOP(OP_ENTERSUB, OPf_STACKED,
