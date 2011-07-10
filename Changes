@@ -1,6 +1,7 @@
 Revision history for smartmatch
 
 {{$NEXT}}
+      - Add a hack to workaround perl RT#77468 on perls before 5.14
 
 0.02  2011-07-10
       - Add a missing perl core function for < 5.14
