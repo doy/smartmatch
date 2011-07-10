@@ -6,6 +6,34 @@
 
 #include "hook_op_check_smartmatch.h"
 
+#ifndef op_append_elem
+#define op_append_elem(a,b,c)	Perl_op_append_elem(aTHX_ a,b,c)
+OP *
+Perl_op_append_elem(pTHX_ I32 type, OP *first, OP *last)
+{
+    if (!first)
+	return last;
+
+    if (!last)
+	return first;
+
+    if (first->op_type != (unsigned)type
+	|| (type == OP_LIST && (first->op_flags & OPf_PARENS)))
+    {
+	return newLISTOP(type, 0, first, last);
+    }
+
+    if (first->op_flags & OPf_KIDS)
+	((LISTOP*)first)->op_last->op_sibling = last;
+    else {
+	first->op_flags |= OPf_KIDS;
+	((LISTOP*)first)->op_first = last;
+    }
+    ((LISTOP*)first)->op_last = last;
+    return first;
+}
+#endif
+
 STATIC OP*
 smartmatch_cb(pTHX_ OP *o, void *user_data)
 {
