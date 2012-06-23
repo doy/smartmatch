@@ -1,6 +1,8 @@
 Revision history for smartmatch
 
 {{$NEXT}}
+
+0.04  2012-06-23
       - restructure some internals for thread safety
       - add test demonstrating recursive smartmatch callbacks
 
