@@ -72,11 +72,11 @@ sub import {
             unless $package->can('match');
     }
 
-    register($engine);
+    $^H{'smartmatch/engine'} = $engine;
 }
 
 sub unimport {
-    unregister();
+    delete $^H{'smartmatch/engine'};
 }
 
 =head1 BUGS

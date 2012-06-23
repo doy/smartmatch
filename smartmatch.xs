@@ -120,28 +120,3 @@ PROTOTYPES: DISABLE
 
 BOOT:
     hook_op_check_smartmatch();
-
-void
-register (engine)
-    SV *engine;
-    CODE:
-        if (SvROK(engine)) {
-            croak("not an engine name");
-        }
-
-        PL_hints |= HINT_LOCALIZE_HH;
-        gv_HVadd(PL_hintgv);
-
-        SvREFCNT_inc(engine);
-        if (!hv_stores(GvHV(PL_hintgv), SMARTMATCH_HH_KEY, engine)) {
-            SvREFCNT_dec(engine);
-            croak("couldn't store the engine");
-        }
-
-void
-unregister ()
-    CODE:
-        PL_hints |= HINT_LOCALIZE_HH;
-        gv_HVadd(PL_hintgv);
-
-        hv_delete(GvHV(PL_hintgv), SMARTMATCH_HH_KEY, 17, G_DISCARD);
