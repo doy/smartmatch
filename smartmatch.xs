@@ -6,6 +6,8 @@
 
 #include "hook_op_check_smartmatch.h"
 
+#define SMARTMATCH_HH_KEY "smartmatch/engine"
+
 #ifndef op_append_elem
 #define op_append_elem(a,b,c)	Perl_op_append_elem(aTHX_ a,b,c)
 OP *
@@ -41,7 +43,7 @@ smartmatch_cb(pTHX_ OP *o, void *user_data)
     SV **engine;
     SV *cb_name;
 
-    engine = hv_fetchs(GvHV(PL_hintgv), "smartmatch_engine", 0);
+    engine = hv_fetchs(GvHV(PL_hintgv), SMARTMATCH_HH_KEY, 0);
     if (!engine) {
         return o;
     }
@@ -131,7 +133,7 @@ register (engine)
         gv_HVadd(PL_hintgv);
 
         SvREFCNT_inc(engine);
-        if (!hv_stores(GvHV(PL_hintgv), "smartmatch_engine", engine)) {
+        if (!hv_stores(GvHV(PL_hintgv), SMARTMATCH_HH_KEY, engine)) {
             SvREFCNT_dec(engine);
             croak("couldn't store the engine");
         }
@@ -142,4 +144,4 @@ unregister ()
         PL_hints |= HINT_LOCALIZE_HH;
         gv_HVadd(PL_hintgv);
 
-        hv_delete(GvHV(PL_hintgv), "smartmatch_engine", 17, G_DISCARD);
+        hv_delete(GvHV(PL_hintgv), SMARTMATCH_HH_KEY, 17, G_DISCARD);
