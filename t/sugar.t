@@ -44,6 +44,8 @@ RECURSE
     else {
         $recurse = sub { $_[0] ~~ $_[1] };
     }
+
+    return $recurse;
 }
 
 done_testing;
