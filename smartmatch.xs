@@ -92,8 +92,9 @@ smartmatch_cb(pTHX_ OP *o, void *user_data)
     }
 #endif
 
-    cb_name = newSVsv(*engine);
-    sv_catpv(cb_name, "::match");
+    cb_name = newSVpvs("smartmatch::engine::");
+    sv_catsv(cb_name, *engine);
+    sv_catpvs(cb_name, "::match");
 
     cb_op = newUNOP(OP_RV2CV, 0, newGVOP(OP_GV, 0, gv_fetchsv(cb_name, 0, SVt_PVCV)));
     list = newLISTOP(OP_LIST, 0, left, right);

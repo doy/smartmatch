@@ -57,21 +57,19 @@ my $anon = 1;
 
 sub import {
     my $package = shift;
-    my ($cb) = @_;
+    my ($engine) = @_;
 
-    my $engine;
-
-    if (ref($cb)) {
-        $engine = 'smartmatch::engine::__ANON__::' . $anon;
-        my $anon_stash = Package::Stash->new($engine);
+    if (ref($engine)) {
+        my $cb = $engine;
+        $engine = '__ANON__::' . $anon++;
+        my $anon_stash = Package::Stash->new("smartmatch::engine::$engine");
         $anon_stash->add_symbol('&match' => $cb);
-        $anon++;
     }
     else {
-        $engine = "smartmatch::engine::$cb";
-        use_package_optimistically($engine);
-        die "$engine does not implement a 'match' function"
-            unless $engine->can('match');
+        my $package = "smartmatch::engine::$engine";
+        use_package_optimistically($package);
+        die "$package does not implement a 'match' function"
+            unless $package->can('match');
     }
 
     register($engine);
