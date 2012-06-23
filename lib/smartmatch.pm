@@ -6,6 +6,8 @@ use 5.010;
 
 use parent 'DynaLoader';
 use B::Hooks::OP::Check;
+use Module::Runtime 'use_package_optimistically';
+use Package::Stash;
 
 sub dl_load_flags { 0x01 }
 
@@ -51,18 +53,28 @@ the core perl smart matching behavior.
 
 =cut
 
+my $anon = 1;
+
 sub import {
     my $package = shift;
     my ($cb) = @_;
 
-    if (!ref($cb)) {
-        my $engine = "smartmatch::engine::$cb";
-        eval "require $engine; 1"
-            or die "Couldn't load smartmatch engine $engine: $@";
-        $cb = $engine->can('match') unless ref($cb);
+    my $engine;
+
+    if (ref($cb)) {
+        $engine = 'smartmatch::engine::__ANON__::' . $anon;
+        my $anon_stash = Package::Stash->new($engine);
+        $anon_stash->add_symbol('&match' => $cb);
+        $anon++;
+    }
+    else {
+        $engine = "smartmatch::engine::$cb";
+        use_package_optimistically($engine);
+        die "$engine does not implement a 'match' function"
+            unless $engine->can('match');
     }
 
-    register($cb);
+    register($engine);
 }
 
 sub unimport {
