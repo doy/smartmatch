@@ -1,6 +1,8 @@
 Revision history for smartmatch
 
 {{$NEXT}}
+      - restructure some internals for thread safety
+      - add test demonstrating recursive smartmatch callbacks
 
 0.03-TRIAL  2011-07-10
       - Add a hack to workaround perl RT#77468 on perls before 5.14
