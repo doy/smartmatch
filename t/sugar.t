@@ -25,27 +25,9 @@ sub any {
     return sub {
         my ($lval) = @_;
 
-        my $recurse = get_smartmatch_callback();
+        my $recurse = smartmatch::get_smartmatch_callback(1);
         return List::MoreUtils::any { $recurse->($lval, $_) } @rvals;
     }
-}
-
-sub get_smartmatch_callback {
-    my $hh = (caller(2))[10];
-    my $engine = $hh ? $hh->{'smartmatch/engine'} : undef;
-
-    my $recurse;
-    if ($engine) {
-        $recurse = eval <<"RECURSE";
-            use smartmatch '$engine';
-            sub { \$_[0] ~~ \$_[1] }
-RECURSE
-    }
-    else {
-        $recurse = sub { $_[0] ~~ $_[1] };
-    }
-
-    return $recurse;
 }
 
 done_testing;

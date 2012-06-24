@@ -79,6 +79,35 @@ sub unimport {
     delete $^H{'smartmatch/engine'};
 }
 
+=head1 FUNCTIONS
+
+=head2 get_smartmatch_callback($level)
+
+Returns a coderef which will call smartmatching on its two arguments, with the
+smartmatch implementation used at caller level C<$level>.
+
+=cut
+
+sub get_smartmatch_callback {
+    my ($level) = @_;
+    $level++;
+    my $hh = (caller($level))[10];
+    my $engine = $hh ? $hh->{'smartmatch/engine'} : undef;
+
+    my $recurse;
+    if ($engine) {
+        $recurse = eval <<"RECURSE";
+            use smartmatch '$engine';
+            sub { \$_[0] ~~ \$_[1] }
+RECURSE
+    }
+    else {
+        $recurse = sub { $_[0] ~~ $_[1] };
+    }
+
+    return $recurse;
+}
+
 =head1 BUGS
 
 No known bugs.
