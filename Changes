@@ -1,8 +1,10 @@
 Revision history for smartmatch
 
 {{$NEXT}}
+      - add callback_at_level to get the coderef to call smartmatch recursively
+        as though it were called at a given caller level
 
-0.04  2012-06-23
+0.04-TRIAL  2012-06-23
       - restructure some internals for thread safety
       - add test demonstrating recursive smartmatch callbacks
 
