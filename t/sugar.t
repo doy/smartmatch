@@ -32,7 +32,7 @@ sub any {
     return sub {
         my ($lval) = @_;
 
-        my $recurse = smartmatch::get_smartmatch_callback(1);
+        my $recurse = smartmatch::callback_at_level(1);
         return List::MoreUtils::any { $recurse->($lval, $_) } @rvals;
     }
 }
@@ -51,7 +51,7 @@ sub any {
         my $self = shift;
         my ($lval) = @_;
 
-        my $recurse = smartmatch::get_smartmatch_callback(1);
+        my $recurse = smartmatch::callback_at_level(1);
         return List::MoreUtils::all { $recurse->($lval, $_) }
                                     @{ $self->{rvals} };
     }

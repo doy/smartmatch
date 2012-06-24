@@ -81,14 +81,14 @@ sub unimport {
 
 =head1 FUNCTIONS
 
-=head2 get_smartmatch_callback($level)
+=head2 callback_at_level($level)
 
 Returns a coderef which will call smartmatching on its two arguments, with the
 smartmatch implementation used at caller level C<$level>.
 
 =cut
 
-sub get_smartmatch_callback {
+sub callback_at_level {
     my ($level) = @_;
     $level++;
     my $hh = (caller($level))[10];
