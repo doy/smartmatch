@@ -49,7 +49,7 @@ smartmatch_cb(pTHX_ OP *o, void *user_data)
     }
 
     left = cBINOPo->op_first;
-    right = left->op_sibling;
+    right = OpSIBLING(left);
 
     o->op_flags &= ~OPf_KIDS;
     op_free(o);
